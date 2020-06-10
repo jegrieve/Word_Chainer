@@ -30,14 +30,38 @@ class WordChainer
     end
 
     def run(source, target)
+        indexes = fill_indexes(source, target)
+        possible_root_words = root_words(source, indexes)
+        #make sure array doesn't return back empty
+        current_word = possible_root_words.shift 
+
+        while current_word != target
+
+            method(current_word) #--> keep going until finds word
+
+            while current_word != target
+               current_word = search(current_word, indexes)
+            end
+            
+            #make sure array is not empty(ie current word has at least 2 items)
+            #otherwise loop is over, theres no word that can equal the target
+            current_word = possible_root_words.shift 
+        end
+
+
+    end
+
+    def fill_indexes(source, target) #fill indexes hash
         indexes = {}
         source.split("").each_with_index do |letter1, i1|
             indexes[i1] = letter1 if letter1 == target[i1]
         end
+        indexes
+    end
 
+    def root_words(source, indexes) #returns array of root words
         words = adjacent_words(source)
         possible_words = []
-        current_word = []
         words.each do |word,i1|
             indexes.each do |k,v|
                 if word[k] != indexes[k]
@@ -46,27 +70,10 @@ class WordChainer
                 end
             end
         end
-        word_chain = []
-        while 
-    #     new_possible_words = []
-    #    possible_words.each do |word|
-    #         word.each_char.with_index do |letter, i|
-    #             if letter == target[i] && indexes[i].nil?
-    #                 new_possible_words << word
-    #             end
-    #         end
-    #     end
-            # while possible_words.length != 1
-        #     attempted_words = []
-        #     current_word = []
-        # end
-        
-        p possible_words
+        possible_words        
     end
-    #2. Go through adj words and first check if the word contains all the letter(s) in the hash
-    #3. If this word has an additional correct letter, add that letter to hash
-    #3. Keep going until source == target or if the possible words is empty we start over from  next word.
-    
+
+
 end
 
 g = WordChainer.new("dictionary.txt")
