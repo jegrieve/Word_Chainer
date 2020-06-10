@@ -34,22 +34,37 @@ class WordChainer
         possible_root_words = root_words(source, indexes)
         #make sure array doesn't return back empty
         current_word = possible_root_words.shift 
-
+        word_chain = [source]
         while current_word != target
-
-            method(current_word) #--> keep going until finds word
-
-            while current_word != target
-               current_word = search(current_word, indexes)
-            end
             
-            #make sure array is not empty(ie current word has at least 2 items)
-            #otherwise loop is over, theres no word that can equal the target
-            current_word = possible_root_words.shift 
+            current_word = depth_search(current_word, indexes, target)
+
+            if current_word != nil
+                word_chain << current_word
+                indexes = fill_indexes(current_word, target)
+            else
+                current_word = possible_root_words.shift
+            end
+        end
+    end
+
+        def depth_search(current_word, indexes, target)
+            words = adjacent_words(current_word)
+            words.each do |word|
+                if valid?(word, indexes,target) && closer?(word,indexes, target)
+                    return word
+                end
+            end
+            nil
         end
 
-
-    end
+        def valid?(word, hash, target)
+            #make sure the word contains the letters in hash at proper position
+        end
+ 
+        def closer?(word, hash, target)
+            #make sure word contains at least 1 new letter that is closer to target word
+        end
 
     def fill_indexes(source, target) #fill indexes hash
         indexes = {}
