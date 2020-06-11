@@ -36,34 +36,54 @@ class WordChainer
         current_word = possible_root_words.shift 
         word_chain = [source]
         while current_word != target
-            
+
+            if current_word != nil
             current_word = depth_search(current_word, indexes, target)
+            else
+                puts "done"
+                break
+            end
 
             if current_word != nil
                 word_chain << current_word
                 indexes = fill_indexes(current_word, target)
+                if current_word == target
+                    return word_chain
+                end
             else
                 current_word = possible_root_words.shift
+                word_chain = []
             end
+
         end
     end
 
         def depth_search(current_word, indexes, target)
             words = adjacent_words(current_word)
             words.each do |word|
-                if valid?(word, indexes,target) && closer?(word,indexes, target)
+                if valid?(word, indexes) && closer?(word,indexes, target)
                     return word
                 end
             end
             nil
         end
 
-        def valid?(word, hash, target)
-            #make sure the word contains the letters in hash at proper position
+        def valid?(word, hash)
+            hash.each do |k,v|
+                return false if word[k] != hash[k]
+            end
+            true
         end
  
         def closer?(word, hash, target)
-            #make sure word contains at least 1 new letter that is closer to target word
+            length = hash.length
+
+            word.each_char.with_index do |letter, i|
+                if letter = target[i]
+                    hash[i] = letter
+                end
+            end
+            length > hash.length
         end
 
     def fill_indexes(source, target) #fill indexes hash
@@ -93,4 +113,4 @@ end
 
 g = WordChainer.new("dictionary.txt")
 
-g.run("math", "barn")
+g.run("duck", "ruby")
