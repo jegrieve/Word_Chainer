@@ -36,13 +36,10 @@ class WordChainer
         current_word = possible_root_words.shift 
         word_chain = [source]
         while current_word != target
-
-            if current_word != nil
+            
+            
             current_word = depth_search(current_word, indexes, target)
-            else
-                puts "done"
-                break
-            end
+            
 
             if current_word != nil
                 word_chain << current_word
@@ -52,7 +49,7 @@ class WordChainer
                 end
             else
                 current_word = possible_root_words.shift
-                word_chain = []
+                word_chain = [source]
             end
 
         end
@@ -61,7 +58,7 @@ class WordChainer
         def depth_search(current_word, indexes, target)
             words = adjacent_words(current_word)
             words.each do |word|
-                if valid?(word, indexes) && closer?(word,indexes, target)
+                if valid?(word, indexes) && closer?(word, indexes, target)
                     return word
                 end
             end
