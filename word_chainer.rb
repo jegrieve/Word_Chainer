@@ -32,56 +32,71 @@ class WordChainer
     def run(source, target)
         indexes = fill_indexes(source, target)
         possible_root_words = root_words(source, indexes)
-        #make sure array doesn't return back empty
-        current_word = possible_root_words.shift 
+        if possible_root_words.empty?
+            puts "no root words"
+            return
+        end
+
+        current_word = possible_root_words.shift
+        if current_word == nil
+            puts "no possible words to make that chain"
+            return
+        end
         word_chain = [source]
+        unique = [source]
         while current_word != target
             
-            
-            current_word = depth_search(current_word, indexes, target)
-            
-
+            current_word = depth_search(current_word, indexes, target, unique)
+            # p current_word
+            unique << current_word
             if current_word != nil
                 word_chain << current_word
+                
                 indexes = fill_indexes(current_word, target)
                 if current_word == target
-                    return word_chain
+                    p word_chain
+                    return 
                 end
             else
                 current_word = possible_root_words.shift
                 word_chain = [source]
+                unique = []
             end
-
         end
     end
 
-        def depth_search(current_word, indexes, target)
-            words = adjacent_words(current_word)
-            words.each do |word|
-                if valid?(word, indexes) && closer?(word, indexes, target)
-                    return word
-                end
-            end
-            nil
-        end
+    def depth_search(current_word, indexes, target, unique)
+        words = adjacent_words(current_word)
 
-        def valid?(word, hash)
-            hash.each do |k,v|
-                return false if word[k] != hash[k]
+        words.each do |word|
+            if valid?(word, indexes) && unique?(word, unique)
+                # && closer?(word, indexes, target)
+                return word
             end
-            true
         end
- 
-        def closer?(word, hash, target)
-            length = hash.length
+        nil
+    end
 
-            word.each_char.with_index do |letter, i|
-                if letter = target[i]
-                    hash[i] = letter
-                end
-            end
-            length > hash.length
+    def valid?(word, hash)
+        hash.each do |k,v|
+            return false if hash[k] != word[k]
         end
+        true
+    end
+
+    def closer?(word, hash, target)
+        length = hash.length
+        word.each_char.with_index do |letter, i|
+            if letter == target[i]
+                hash[i] = letter
+            end
+        end
+        length > hash.length
+    end
+
+    def unique?(word, array)
+        !array.include?(word)
+    end
 
     def fill_indexes(source, target) #fill indexes hash
         indexes = {}
